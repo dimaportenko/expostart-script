@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$(pwd)"
+
+echo $DIR
+
+if [ -n "$1" ]; then
+  echo $1
+else
+  echo "Error! Please enter project name!" 1>&2
+  exit 1
+fi
+
+expo init -t expo-template-blank-typescript $1
+
+cd "$DIR/$1"
+
+yarn add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier
+
+cat > .eslintrc.js <<EOF
+module.exports = {
+  extends: ['@react-native-community', "eslint-config-prettier"],
+}
+EOF
+
+SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
+
+node "$SCRIPTS_DIR/patch-json.js" "$DIR/$1"
+
+echo ".idea" >> ".gitignore"
+
+yarn install
+
+./node_modules/prettier/bin-prettier.js --write .
+
+git add .
+git commit -m 'expostart script updates'
