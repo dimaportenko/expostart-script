@@ -1,0 +1,113 @@
+#!/usr/bin/env node
+
+const { exec } = require('child_process');
+const fs = require('fs');
+
+const args = process.argv.slice(2);
+
+if (args.length < 1) {
+  console.log("Usage: quickexpo project-name");
+  process.exit(1);
+}
+
+// run terminal command function
+const run = (cmd) => {
+  return new Promise((resolve, reject) => {
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(stdout);
+    });
+  });
+}
+
+const createESLintConfig = async () => {
+  try {
+    // create eslintrc.json
+    await run('touch .eslintrc.js');
+    await run('echo \'module.exports = {extends: ["@react-native-community", "eslint-config-prettier"],}\' > .eslintrc.js');
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const updatePackageJson = async () => {
+  try {
+    // insert the following code into the package.json file
+    const filepath = `${process.cwd()}/package.json`;
+    const file = require(filepath);
+    if (file.resolutions) {
+      file.resolutions["@types/react"] = "^17"
+    } else {
+      file.resolutions = {
+        "@types/react": "^17"
+      }
+    }
+    fs.writeFile(filepath, JSON.stringify(file), function writeJSON(err) {
+      if (err) return console.log(err);
+      console.log(JSON.stringify(file));
+      console.log('writing to ' + filepath);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// update the tsconfig.json file
+const updateTSConfig = async () => {
+  try {
+    // get the filepath of the tsconfig.json file
+    const filepath = `${process.cwd()}/tsconfig.json`;
+    const file = require(filepath);
+    file.compilerOptions.module = "es6";
+    fs.writeFile(filepath, JSON.stringify(file), function writeJSON(err) {
+      if (err) return console.log(err);
+      console.log(JSON.stringify(file));
+      console.log('writing to ' + filepath);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+const main = async () => {
+  try {
+    // init expo project
+    await run(`expo init -t expo-template-blank-typescript ${args[0]}`);
+
+    // move to the subdirectory
+    process.chdir(args[0]);
+
+    // output the current directory
+    console.log(process.cwd());
+
+    // install depedencies
+    await run('yarn add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier');
+
+    await createESLintConfig();
+
+    // insert the following code into the tsconfig.json file
+    await updateTSConfig();
+
+    // insert the following code into the package.json file
+    await updatePackageJson();
+
+    await run('echo ".idea" >> ".gitignore"');
+    await run('yarn install');
+    await run('./node_modules/prettier/bin-prettier.js --write .');
+    await run('git add .');
+    await run('git commit -m \'expostart script updates\'');
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+main();
+// run prettier on the entire project
+// const test = async () => {
+//   process.chdir(args[0]);
+//   await createESLintConfig();
+//   await run('node ./node_modules/prettier/bin-prettier.js --write .');
+// }
+// test()
