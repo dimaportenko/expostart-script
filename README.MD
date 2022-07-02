@@ -20,8 +20,12 @@
 <br/>
 
 ## Usage
-Add `bin` to your PATH.
+Add `bin` to your PATH. Like
+```bash
+export PATH=$PATH:$HOME/scripts/expo/bin
+```
 
+And run
 ```bash
 expostart project-name
 ```
