@@ -34,5 +34,7 @@ yarn install
 
 ./node_modules/prettier/bin-prettier.js --write .
 
+echo "# $1" >> README.md
+
 git add .
 git commit -m 'expostart script updates'
