@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+if [ -n "$1" ]; then
+  echo $1
+else
+  echo "Error! Please enter project name!" 1>&2
+  exit 1
+fi
+
+echo yes | npx react-native init $1 --template react-native-template-typescript
+
+cd ./$1
+
+echo "# $1" >> README.md
+
+git init
+git add .
+git commit -m 'react native typescript template init'
