@@ -13,6 +13,27 @@ cd ./$1
 
 echo "# $1" >> README.md
 
+rm App.tsx
+
+cat > App.tsx <<EOF
+import React from 'react';
+import {SafeAreaView, StyleSheet, Text} from 'react-native';
+
+const App = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text>Hello</Text>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {flex: 1, alignSelf: 'center', justifyContent: 'center'},
+});
+
+export default App;
+EOF
+
 git init
 git add .
 git commit -m 'react native typescript template init'
