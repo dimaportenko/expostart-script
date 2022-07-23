@@ -34,6 +34,9 @@ const styles = StyleSheet.create({
 export default App;
 EOF
 
+# add src directory
+mkdir src
+
 git init
 git add .
 git commit -m 'react native typescript template init'
