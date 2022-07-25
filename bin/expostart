@@ -5,6 +5,7 @@ DIR="$(pwd)"
 
 echo $DIR
 
+# check if project name is present
 if [ -n "$1" ]; then
   echo $1
 else
@@ -12,26 +13,34 @@ else
   exit 1
 fi
 
+# create expo project with typescript template
 expo init -t expo-template-blank-typescript $1
 
+# go to the project directory
 cd "$DIR/$1"
 
+# add dependencies
 yarn add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier
 
+# add eslint config
 cat > .eslintrc.js <<EOF
 module.exports = {
   extends: ['@react-native-community', "eslint-config-prettier"],
 }
 EOF
 
+# get scripts directory path
 SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
 
+# patch jsons package.json, tsconfig.json, etc
 node "$SCRIPTS_DIR/patch-json.js" "$DIR/$1"
 
+# add .idea to gitignore
 echo ".idea" >> ".gitignore"
 
 yarn install
 
+# add tailwind function
 addTailwind() {
   yarn add twrnc
   SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
@@ -40,6 +49,7 @@ addTailwind() {
   cp "$SCRIPTS_DIR/templates/tailwind.lib.ts" src/lib/tailwind/index.ts
 }
 
+# check script input arguments and run functions accordingly found
 for arg in "$@"
 do
     if [ "$arg" == "tw" ]; then
@@ -48,9 +58,12 @@ do
     fi
 done
 
+# run prettier
 ./node_modules/prettier/bin-prettier.js --write .
 
+# add README.md
 echo "# $1" >> README.md
 
+# add changes to the git
 git add .
 git commit -m 'expostart script updates'
