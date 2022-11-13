@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+echo "test echo"
+
+addTailwind() {
+  yarn add twrnc
+  SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
+  mkdir -p src/lib/tailwind
+  cp "$SCRIPTS_DIR/templates/tailwind.config.js" tailwind.config.js
+  cp "$SCRIPTS_DIR/templates/tailwind.lib.ts" src/lib/tailwind/index.ts
+}
+
+for arg in "$@"
+do
+    if [ "$arg" == "tw" ]; then
+        echo "tailwind found"
+        addTailwind
+    fi
+done
+
+#yarn add twrnc

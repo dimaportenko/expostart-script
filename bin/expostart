@@ -1,5 +1,17 @@
 #!/usr/bin/env bash
 
+# add help output
+for arg in "$@"; do
+  if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
+    echo "Usage: expostart [project_name] [options]"
+    echo "Options:"
+    echo "  -h, --help     output usage information"
+    echo "  tw           add tailwind library to the template"
+    exit 0
+  fi
+done
+
+
 #DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DIR="$(pwd)"
 
@@ -14,7 +26,8 @@ else
 fi
 
 # create expo project with typescript template
-expo init -t expo-template-blank-typescript $1
+# echo yes | npx create-expo-app -t expo-template-blank-typescript@sdk-46 $1
+echo yes | npx create-expo-app -t expo-template-blank-typescript $1
 
 # go to the project directory
 cd "$DIR/$1"
@@ -47,6 +60,7 @@ addTailwind() {
   mkdir -p src/lib/tailwind
   cp "$SCRIPTS_DIR/templates/tailwind.config.js" tailwind.config.js
   cp "$SCRIPTS_DIR/templates/tailwind.lib.ts" src/lib/tailwind/index.ts
+  cp "$SCRIPTS_DIR/templates/tailwindApp.tsx" App.tsx 
 }
 
 # check script input arguments and run functions accordingly found

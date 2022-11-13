@@ -19,10 +19,10 @@ fileName = getFilepath('package.json');
 file = require(fileName);
 
 if (file.resolutions) {
-  file.resolutions["@types/react"] = "^17"
+  file.resolutions["@types/react"] = "^18"
 } else {
   file.resolutions = {
-    "@types/react": "^17"
+    "@types/react": "^18"
   }
 }
 
