@@ -5,8 +5,8 @@ for arg in "$@"; do
   if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
     echo "Usage: expostart [project_name] [options]"
     echo "Options:"
-    echo "  -h, --help     output usage information"
-    echo "  tw           add tailwind library to the template"
+    echo "  -h, --help       output usage information"
+    echo "  -tw, --tailwind  add tailwind library to the template"
     exit 0
   fi
 done
@@ -39,6 +39,10 @@ yarn add -D eslint prettier @react-native-community/eslint-config @typescript-es
 cat > .eslintrc.js <<EOF
 module.exports = {
   extends: ['@react-native-community', "eslint-config-prettier"],
+  rules: {
+    "react/jsx-uses-react": "off",
+    "react/react-in-jsx-scope": "off",
+  },
 }
 EOF
 
@@ -66,7 +70,7 @@ addTailwind() {
 # check script input arguments and run functions accordingly found
 for arg in "$@"
 do
-    if [ "$arg" == "tw" ]; then
+    if [[ "$arg" == "-tw" || "$arg" == "--tailwind" ]]; then
         echo "tailwind found"
         addTailwind
     fi
