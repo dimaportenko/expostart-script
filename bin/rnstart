@@ -7,7 +7,7 @@ else
   exit 1
 fi
 
-echo yes | npx react-native init $1 --template react-native-template-typescript
+echo yes | npx react-native@latest init $1 
 
 cd ./$1
 
