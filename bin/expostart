@@ -42,6 +42,12 @@ rm -rf app
 # and copy from template
 cp -r "$SCRIPTS_DIR/templates/app" .
 
+# move sources to the src directory
+mkdir src
+mv app src/app
+mv components src/components
+mv constants src/constants
+
 # add dependencies
 bun add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier prettier-plugin-tailwindcss
 
@@ -75,10 +81,10 @@ addTailwind() {
   bun add --dev tailwindcss@3.2.2
 
   SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
-  mkdir -p lib/tailwind
+  mkdir -p src/lib/tailwind
   cp "$SCRIPTS_DIR/templates/tailwind.config.js" tailwind.config.js
   cp "$SCRIPTS_DIR/templates/babel.config.js" babel.config.js
-  cp "$SCRIPTS_DIR/templates/native-wind.d.ts" ./lib/tailwind/native-wind.d.ts
+  cp "$SCRIPTS_DIR/templates/native-wind.d.ts" ./src/lib/tailwind/native-wind.d.ts
 
 
 
