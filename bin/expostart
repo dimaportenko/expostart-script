@@ -27,13 +27,25 @@ fi
 
 # create expo project with typescript template
 # echo yes | npx create-expo-app -t expo-template-blank-typescript@sdk-46 $1
-echo yes | npx create-expo-app -t expo-template-blank-typescript $1
+echo yes | bun create expo --template expo-template-blank-typescript $1
 
 # go to the project directory
 cd "$DIR/$1"
 
+
+# get scripts directory path
+SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
+
+# # remove default navigaiton template
+# rm -rf app
+#
+# # and copy from template
+# cp -r "$SCRIPTS_DIR/templates/app" .
+
 # add dependencies
-yarn add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier
+bun add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier prettier-plugin-tailwindcss
+
+cp "$SCRIPTS_DIR/templates/prettier.config.js" prettier.config.js
 
 # add eslint config
 cat > .eslintrc.js <<EOF
@@ -49,35 +61,42 @@ EOF
 # get scripts directory path
 SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
 
-# patch jsons package.json, tsconfig.json, etc
-node "$SCRIPTS_DIR/patch-json.js" "$DIR/$1"
-
-# add .idea to gitignore
-echo ".idea" >> ".gitignore"
-
-yarn install
+# # patch jsons package.json, tsconfig.json, etc
+# node "$SCRIPTS_DIR/patch-json.js" "$DIR/$1"
+#
+# # add .idea to gitignore
+# echo ".idea" >> ".gitignore"
+#
+# yarn install
 
 # add tailwind function
 addTailwind() {
-  yarn add twrnc
+  bun add nativewind
+  bun add --dev tailwindcss@3.2.2
+
   SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
   mkdir -p src/lib/tailwind
   cp "$SCRIPTS_DIR/templates/tailwind.config.js" tailwind.config.js
-  cp "$SCRIPTS_DIR/templates/tailwind.lib.ts" src/lib/tailwind/index.ts
+  cp "$SCRIPTS_DIR/templates/babel.config.js" babel.config.js
+  cp "$SCRIPTS_DIR/templates/native-wind.d.ts" ./src/lib/tailwind/native-wind.d.ts
+
+
+
+  # cp "$SCRIPTS_DIR/templates/tailwind.lib.ts" src/lib/tailwind/index.ts
   cp "$SCRIPTS_DIR/templates/tailwindApp.tsx" App.tsx 
 }
 
 # check script input arguments and run functions accordingly found
-for arg in "$@"
-do
-    if [[ "$arg" == "-tw" || "$arg" == "--tailwind" ]]; then
-        echo "tailwind found"
+# for arg in "$@"
+# do
+    # if [[ "$arg" == "-tw" || "$arg" == "--tailwind" ]]; then
+        # echo "tailwind found"
         addTailwind
-    fi
-done
+    # fi
+# done
 
 # run prettier
-./node_modules/prettier/bin-prettier.js --write .
+bun prettier --write .
 
 # add README.md
 echo "# $1" >> README.md
