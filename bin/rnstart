@@ -70,6 +70,7 @@ yarn install
 
 cd ios 
 pod install
+cd ..
 
 # run prettier
 yarn prettier --write .
