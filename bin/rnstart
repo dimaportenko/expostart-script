@@ -8,10 +8,18 @@ else
 fi
 
 echo yes | npx react-native@latest init $1 
+# bunx react-native@latest init $1
 
 cd ./$1
 
 echo "# $1" >> README.md
+
+# get scripts directory path
+SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
+
+# and copy from template
+cp -r "$SCRIPTS_DIR/templates/nvim" ./.nvim
+
 
 rm App.tsx
 
@@ -36,6 +44,35 @@ EOF
 
 # add src directory
 mkdir src
+
+# add Tailwind
+addTailwind() {
+  yarn add nativewind
+  yarn add --dev tailwindcss@3.2.2
+  yarn add --dev prettier-plugin-tailwindcss
+
+  SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
+  mkdir -p src/lib/tailwind
+  cp "$SCRIPTS_DIR/templates/tailwind.config.js" tailwind.config.js
+  cp "$SCRIPTS_DIR/templates/babel.config.cli.js" babel.config.js
+  cp "$SCRIPTS_DIR/templates/native-wind.d.ts" ./src/lib/tailwind/native-wind.d.ts
+
+
+
+  # cp "$SCRIPTS_DIR/templates/tailwind.lib.ts" src/lib/tailwind/index.ts
+  # cp "$SCRIPTS_DIR/templates/tailwindApp.tsx" App.tsx 
+}
+
+# run add tailwind
+addTailwind
+
+yarn install
+
+cd ios 
+pod install
+
+# run prettier
+yarn prettier --write .
 
 git init
 git add .
