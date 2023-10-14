@@ -10,6 +10,16 @@ fi
 echo yes | npx react-native@latest init $1 
 # bunx react-native@latest init $1
 
+# Check the exit code of the last command
+if [ $? -ne 0 ]; then
+  echo "Error: react-native init failed."
+  # Add your error-handling code here, such as logging, cleanup, or notifying the user.
+  exit 1  # Exit the script with an error code
+else
+  echo "React Native project initialized successfully."
+  # Add any other actions you want to perform on success
+fi
+
 cd ./$1
 
 echo "# $1" >> README.md
@@ -56,11 +66,6 @@ addTailwind() {
   cp "$SCRIPTS_DIR/templates/tailwind.config.js" tailwind.config.js
   cp "$SCRIPTS_DIR/templates/babel.config.cli.js" babel.config.js
   cp "$SCRIPTS_DIR/templates/native-wind.d.ts" ./src/lib/tailwind/native-wind.d.ts
-
-
-
-  # cp "$SCRIPTS_DIR/templates/tailwind.lib.ts" src/lib/tailwind/index.ts
-  # cp "$SCRIPTS_DIR/templates/tailwindApp.tsx" App.tsx 
 }
 
 # run add tailwind
