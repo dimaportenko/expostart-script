@@ -1,6 +1,7 @@
 {
   "commands": {
     "start": "yarn react-native start",
+    "start:clear": "yarn start --reset-cache",
     "install": "yarn install && npx pod-install",
     "run:ios": "yarn react-native run-ios --simulator 'iPhone 14'"
   }

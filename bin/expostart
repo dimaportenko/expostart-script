@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+BLANK="expo-template-blank-typescript"
+USE_BLANK=false
 # add help output
 for arg in "$@"; do
   if [[ "$arg" == "-h" || "$arg" == "--help" ]]; then
@@ -9,8 +11,17 @@ for arg in "$@"; do
     echo "  -tw, --tailwind  add tailwind library to the template"
     exit 0
   fi
+
+  if [[ "$arg" == "-b" || "$arg" == "--blank" ]]; then
+    USE_BLANK=true
+  fi
 done
 
+if [ "$USE_BLANK" = true ] ; then
+  echo "Using blank template"
+fi
+
+# exit 0
 
 #DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DIR="$(pwd)"
@@ -28,7 +39,11 @@ fi
 # create expo project with typescript template
 # echo yes | npx create-expo-app -t expo-template-blank-typescript@sdk-46 $1
 # echo yes | bun create expo --template expo-template-blank-typescript $1
-echo yes | bun create expo --template expo-template-tabs $1
+if [ "$USE_BLANK" = true ] ; then
+  echo yes | bun create expo $1
+else
+  echo yes | bun create expo --template expo-template-tabs $1
+fi
 
 # go to the project directory
 cd "$DIR/$1"
@@ -37,21 +52,33 @@ cd "$DIR/$1"
 # get scripts directory path
 SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
 
-# remove default navigaiton template
-rm -rf app
-# and copy from template
-cp -r "$SCRIPTS_DIR/templates/app" .
+# if not blank
+if [ "$USE_BLANK" = true ] ; then
+  rm App.js
+  cp "$SCRIPTS_DIR/templates/App.tsx" App.tsx
+else
+  # remove default navigaiton template
+  rm -rf app
+  # and copy from template
+  cp -r "$SCRIPTS_DIR/templates/app" .
+fi
 
 # move sources to the src directory
 mkdir src
-mv app src/app
-mv components src/components
-mv constants src/constants
+if [ "$USE_BLANK" = false ] ; then
+  mv app src/app
+  mv components src/components
+  mv constants src/constants
+fi
 
 # add dependencies
-bun add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier prettier-plugin-tailwindcss
+bun add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier 
 
-cp "$SCRIPTS_DIR/templates/prettier.config.js" prettier.config.js
+if [ "$USE_BLANK" = false ] ; then
+  cp "$SCRIPTS_DIR/templates/prettier.config.js" prettier.config.js
+else 
+  cp "$SCRIPTS_DIR/templates/prettier.config.cli.js" prettier.config.js
+fi
 
 # add eslint config
 cat > .eslintrc.js <<EOF
@@ -78,7 +105,7 @@ SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
 # add tailwind function
 addTailwind() {
   bun add nativewind
-  bun add --dev tailwindcss@3.2.2
+  bun add --dev tailwindcss@3.2.2 prettier-plugin-tailwindcss
 
   SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
   mkdir -p src/lib/tailwind
@@ -97,15 +124,24 @@ addTailwind() {
 # do
     # if [[ "$arg" == "-tw" || "$arg" == "--tailwind" ]]; then
         # echo "tailwind found"
-        addTailwind
+        # addTailwind
     # fi
 # done
+
+if [ "$USE_BLANK" = false ] ; then
+  # add tailwind function
+  addTailwind
+fi
 
 # run prettier
 bun prettier --write .
 
 # add README.md
 echo "# $1" >> README.md
+
+# and copy from template
+cp -r "$SCRIPTS_DIR/templates/nvim-expo" ./.nvim
+
 
 # add changes to the git
 git add .
