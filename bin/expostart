@@ -56,6 +56,7 @@ SCRIPTS_DIR="$(dirname -- "${BASH_SOURCE[0]}")/.."
 if [ "$USE_BLANK" = true ] ; then
   rm App.js
   cp "$SCRIPTS_DIR/templates/App.tsx" App.tsx
+  bunx expo customize tsconfig.json
 else
   # remove default navigaiton template
   rm -rf app
@@ -144,5 +145,9 @@ cp -r "$SCRIPTS_DIR/templates/nvim-expo" ./.nvim
 
 
 # add changes to the git
+if [ "$USE_BLANK" = true ] ; then
+  git init
+fi
+
 git add .
 git commit -m 'expostart script updates'
