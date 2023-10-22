@@ -73,7 +73,9 @@ if [ "$USE_BLANK" = false ] ; then
 fi
 
 # add dependencies
-bun add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier 
+# bun add -D eslint prettier @react-native-community/eslint-config @typescript-eslint/eslint-plugin eslint-config-prettier 
+# https://docs.expo.dev/guides/using-eslint/
+bun add -D eslint prettier eslint-config-universe
 
 if [ "$USE_BLANK" = false ] ; then
   cp "$SCRIPTS_DIR/templates/prettier.config.js" prettier.config.js
@@ -84,11 +86,8 @@ fi
 # add eslint config
 cat > .eslintrc.js <<EOF
 module.exports = {
-  extends: ['@react-native-community', "eslint-config-prettier"],
-  rules: {
-    "react/jsx-uses-react": "off",
-    "react/react-in-jsx-scope": "off",
-  },
+  root: true,
+  extends: ['universe/native', "eslint-config-prettier"],
 }
 EOF
 
